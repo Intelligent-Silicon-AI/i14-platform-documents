@@ -1,7 +1,7 @@
 ---
-title: "Download i14 Models from Hugging Face"
+title: "Download i14 Models from Hugging Face for Local Inference"
 sidebarTitle: "Hugging Face"
-description: "Download Sugar Glider 120B or Sugar Coder 27B weights from Hugging Face and run them locally on your own hardware."
+description: "Download Sugar Glider 120B or i14 Sugar Coder 27B weights from Hugging Face and run both models locally for full control over inference, privacy, and cost."
 ---
 
 Both i14 models are available as open weights on Hugging Face. You can download and run them locally for full control over inference, privacy, and cost — no API key required. Whether you're running a single high-end consumer GPU or a multi-GPU datacenter cluster, this page walks you through getting started.
@@ -70,7 +70,7 @@ Sugar Coder 27B is the more accessible of the two models. At 4-bit quantization 
 Sugar Glider 120B is i14's flagship 120B parameter model. The download is significantly larger (~240GB for fp16 weights) and requires a multi-GPU setup or a high-end single GPU to run. Make sure you have sufficient disk space and the appropriate hardware before proceeding.
 
 <Warning>
-  Sugar Glider 120B requires approximately 240GB of VRAM in fp16 or ~60–80GB at 4-bit quantization. This is not practical for consumer GPUs. See the [hardware requirements](/local/hardware-requirements) page for full specs.
+  Sugar Glider 120B requires approximately 240GB of VRAM in fp16 or ~64GB at 4-bit quantization. This is not practical for consumer GPUs. See the [hardware requirements](/local/hardware-requirements) page for full specs.
 </Warning>
 
 <Steps>

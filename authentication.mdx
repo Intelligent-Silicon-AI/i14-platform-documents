@@ -1,7 +1,7 @@
 ---
-title: "Authenticate with the i14 API Using Bearer Keys"
+title: "Authentication: Securing i14 API Requests with Bearer Keys"
 sidebarTitle: "Authentication"
-description: "i14 API uses Bearer token authentication. Learn how to create your API key, pass it in requests, and handle auth errors."
+description: "The i14 API uses Bearer token authentication. Learn how to create an API key, add it to your requests, and handle auth errors like 401 and 403."
 ---
 
 Every request you send to the i14 API must include a Bearer token in the `Authorization` header. The token is an API key that you generate from the i14 developer platform. Without a valid key the API returns a `401` error and discards the request—no partial processing occurs. This page shows you how to get a key, attach it to requests, keep it secure, and interpret authentication errors when they arise.
@@ -20,7 +20,7 @@ Keys are scoped to the models your account has access to. If your key does not h
 
 Include your key as a Bearer token in the `Authorization` HTTP header on every request.
 
-```
+```http
 Authorization: Bearer YOUR_API_KEY
 ```
 

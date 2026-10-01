@@ -1,5 +1,5 @@
 ---
-title: "POST /v1/chat/completions — i14 Chat API"
+title: "POST /v1/chat/completions — i14 Chat Completions API"
 sidebarTitle: "Chat Completions"
 description: "Create a chat completion with Sugar Glider 120B or Sugar Coder 27B. Accepts a messages array and model ID, returns generated text with usage stats."
 ---
@@ -8,7 +8,7 @@ The `/v1/chat/completions` endpoint is the primary way to generate text with i14
 
 ## Endpoint
 
-```
+```text
 POST https://api-dev.i14.ai/v1/chat/completions
 ```
 
@@ -54,7 +54,7 @@ POST https://api-dev.i14.ai/v1/chat/completions
   How many independent completion choices to generate for each request. Each choice is billed separately against your token quota. **Default:** `1`
 </ParamField>
 
-<ParamField body="stop" type="string | array">
+<ParamField body="stop" type="string or array">
   Up to four sequences where the model will stop generating further tokens. The returned text will not include the stop sequence itself. Pass a single string or an array of strings.
 </ParamField>
 
