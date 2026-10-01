@@ -1,0 +1,38 @@
+---
+title: "i14 Model Overview: Sugar Glider and Sugar Coder"
+sidebarTitle: "Overview"
+description: "Compare i14's two available models — Sugar Glider 120B and Sugar Coder 27B — to choose the right one for your use case."
+---
+
+i14 currently offers two models — Sugar Glider 120B and Sugar Coder 27B — both served from the same API endpoint at `https://api-dev.i14.ai/v1`. Switching between them is as simple as changing the `model` parameter in your request.
+
+## Model Comparison
+
+| Model | Model ID | Parameters | Best For | Architecture |
+|---|---|---|---|---|
+| Sugar Glider 120B | `sugar-glider-120b` | 120B | General chat, reasoning, long-form generation | i14 proprietary |
+| Sugar Coder 27B | `sugar-coder-27b` | 27B | Code generation, debugging, agentic coding | Qwen Coder 27B base + i14 embedded tools |
+
+## Choosing a Model
+
+**Use Sugar Glider 120B** when your task is general-purpose — chat, reasoning, summarization, instruction following, or long-form text generation. Its i14 proprietary architecture is optimized for broad language understanding at scale.
+
+**Use Sugar Coder 27B** when your workflow is code-focused, especially if you want agentic behavior. Sugar Coder's embedded tools run inside the model's forward pass, giving you tighter coding loops without wiring up external tool orchestration.
+
+## Model Pages
+
+<CardGroup cols={2}>
+  <Card title="Sugar Glider 120B" icon="whale" href="/models/sugar-glider-120b">
+    i14's flagship 120B general-purpose language model. Great for reasoning, chat, and long-form generation.
+  </Card>
+  <Card title="Sugar Coder 27B" icon="code" href="/models/sugar-coder-27b">
+    A coding-specialized model with embedded tools that run inside the forward pass for agentic coding workflows.
+  </Card>
+</CardGroup>
+
+## Availability
+
+Both models are available in two ways:
+
+- **Cloud API** — call `https://api-dev.i14.ai/v1` directly, with no infrastructure to manage.
+- **Hugging Face weights** — download either model for local inference. See the [Hugging Face setup guide](/local/hugging-face) for instructions.

@@ -1,0 +1,150 @@
+---
+title: "Use the OpenAI SDK with the i14 API"
+sidebarTitle: "OpenAI SDK"
+description: "Point the official OpenAI Python or Node.js SDK at the i14 API endpoint to use Sugar Glider 120B and Sugar Coder 27B in your existing code."
+---
+
+Because the i14 API is fully OpenAI-compatible, you can use the official OpenAI SDK in Python or Node.js by changing only the `base_url` (Python) or `baseURL` (Node.js) and your API key. Everything else — your prompts, model parameters, and response handling — stays exactly the same.
+
+## Python
+
+Install the OpenAI Python SDK if you have not already:
+
+```bash
+pip install openai
+```
+
+### Sugar Glider 120B — general assistant
+
+```python
+import openai
+
+client = openai.OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key="YOUR_I14_API_KEY",
+)
+
+response = client.chat.completions.create(
+    model="sugar-glider-120b",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain the difference between a process and a thread."},
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+### Sugar Coder 27B — coding tasks
+
+```python
+import openai
+
+client = openai.OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key="YOUR_I14_API_KEY",
+)
+
+response = client.chat.completions.create(
+    model="sugar-coder-27b",
+    messages=[
+        {"role": "system", "content": "You are an expert software engineer."},
+        {"role": "user", "content": "Write a Python function that flattens a nested list."},
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+## Node.js / TypeScript
+
+Install the OpenAI Node.js SDK if you have not already:
+
+```bash
+npm install openai
+```
+
+### Sugar Glider 120B — general assistant
+
+```typescript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api-dev.i14.ai/v1",
+  apiKey: "YOUR_I14_API_KEY",
+});
+
+const response = await client.chat.completions.create({
+  model: "sugar-glider-120b",
+  messages: [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: "Explain the difference between a process and a thread." },
+  ],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+### Sugar Coder 27B — coding tasks
+
+```typescript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api-dev.i14.ai/v1",
+  apiKey: "YOUR_I14_API_KEY",
+});
+
+const response = await client.chat.completions.create({
+  model: "sugar-coder-27b",
+  messages: [
+    { role: "system", content: "You are an expert software engineer." },
+    { role: "user", content: "Write a TypeScript function that flattens a nested array." },
+  ],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+## Environment Variables
+
+Hardcoding your API key is fine for quick tests, but you should store it in an environment variable for any code you share or deploy.
+
+Set the variable in your shell:
+
+```bash
+export I14_API_KEY="your-api-key-here"
+```
+
+Then read it in your code:
+
+<CodeGroup>
+
+```python Python
+import os
+import openai
+
+client = openai.OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key=os.environ["I14_API_KEY"],
+)
+```
+
+```typescript Node.js
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api-dev.i14.ai/v1",
+  apiKey: process.env.I14_API_KEY,
+});
+```
+
+</CodeGroup>
+
+<Note>
+  You can create your API key at [platform-dev.i14.ai](https://platform-dev.i14.ai/). Never commit your key to source control or expose it in client-side code.
+</Note>
+
+<Tip>
+  All other OpenAI SDK features work exactly the same way with the i14 API — including streaming responses, async/await patterns, function calling, and retry configuration. Simply point the SDK at `https://api-dev.i14.ai/v1` and your existing code will work as-is.
+</Tip>

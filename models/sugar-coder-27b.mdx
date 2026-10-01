@@ -1,0 +1,82 @@
+---
+title: "Sugar Coder 27B: Agentic Coding Model with Embedded Tools"
+sidebarTitle: "Sugar Coder 27B"
+description: "Sugar Coder 27B is a coding-specialized model built on Qwen Coder 27B with i14's embedded tool-use that runs inside the forward pass."
+---
+
+Sugar Coder 27B is i14's coding-specialized model, converted from a Qwen Coder 27B base and extended with i14's embedded tool system. Unlike traditional tool-calling setups, Sugar Coder's tools execute inside the model's own forward pass — not as external function calls — making tool invocation a native part of inference. This enables tighter, faster agentic coding loops without any external orchestration on your side.
+
+## What Are Embedded Tools?
+
+In a standard tool-calling workflow, the model emits a structured JSON payload, execution pauses, an external runtime runs the tool, and the result is fed back in a follow-up request. Every tool use adds a full round trip.
+
+Sugar Coder 27B works differently. Its tools — including capabilities like code execution and search — run **inside the model's forward pass**. The model invokes them, receives their output, and continues reasoning in a single inference call. The result is:
+
+- **No external orchestration required** — you don't need to build a tool-execution loop.
+- **Lower latency per agentic step** — tool results are available within the same forward pass.
+- **Tighter integration** — the model reasons over tool output as part of its native context, not as a bolted-on afterthought.
+
+## Model Details
+
+| Field | Value |
+|---|---|
+| Model ID | `sugar-coder-27b` |
+| Parameters | 27B |
+| Base Model | Qwen Coder 27B |
+| Architecture | i14 embedded tools (runs in forward pass) |
+| Best For | Code generation, debugging, agentic coding tasks, code explanation |
+
+## Use via the API
+
+Send a request to the shared i14 endpoint and set `model` to `sugar-coder-27b`.
+
+```bash
+curl https://api-dev.i14.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $I14_API_KEY" \
+  -d '{
+    "model": "sugar-coder-27b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Write a Python function that parses a JSON file and returns all keys with null values."
+      }
+    ]
+  }'
+```
+
+## Use via OpenAI SDK
+
+Sugar Coder 27B is fully OpenAI API-compatible. Point the SDK's `base_url` at the i14 endpoint, pass your API key, and set the model to `sugar-coder-27b`.
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key="your-i14-api-key",
+)
+
+response = client.chat.completions.create(
+    model="sugar-coder-27b",
+    messages=[
+        {
+            "role": "user",
+            "content": (
+                "Write a Python function that parses a JSON file "
+                "and returns all keys with null values."
+            ),
+        }
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+## Use Locally
+
+You can download Sugar Coder 27B weights from Hugging Face and run the model on your own hardware. See the [Hugging Face setup guide](/local/hugging-face) to get started, and check the [hardware requirements](/local/hardware-requirements) page to confirm your setup can support the model.
+
+<Tip>
+  Sugar Coder 27B is the right choice for any coding workflow that benefits from agentic tool use. Because its tools run inside the forward pass, you get agentic behavior out of the box — no external tool runner, no orchestration layer, no extra infrastructure to maintain.
+</Tip>

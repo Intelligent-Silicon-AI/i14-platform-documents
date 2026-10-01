@@ -1,0 +1,71 @@
+---
+title: "Use i14 Models in Pi on macOS"
+sidebarTitle: "Pi"
+description: "Configure Pi on macOS to use the i14 API, letting you run Sugar Glider 120B or Sugar Coder 27B directly inside your Pi environment."
+---
+
+[Pi](https://pi.dev) is a macOS terminal AI assistant. Because the i14 API is OpenAI-compatible, you can point Pi at the i14 inference endpoint and use Sugar Glider 120B or Sugar Coder 27B without changing how you work. Follow the steps below to install Pi, create an API key, and wire everything together.
+
+<Steps>
+
+  <Step title="Install Pi">
+    Open Terminal and run the install command from the [Pi homepage](https://pi.dev):
+
+    ```bash
+    curl -fsSL https://pi.dev/install.sh | sh
+    ```
+  </Step>
+
+  <Step title="Create an API key">
+    Sign in to [platform-dev.i14.ai](https://platform-dev.i14.ai/) and create an API key with access to the model you want to use. Keep the key private and never commit it to source control.
+  </Step>
+
+  <Step title="Add the i14 provider to Pi">
+    Pi reads custom providers and models from `~/.pi/agent/models.json`. Create the directory and file if they do not already exist, then open the file in a text editor:
+
+    ```bash
+    mkdir -p ~/.pi/agent
+    touch ~/.pi/agent/models.json
+    open -e ~/.pi/agent/models.json
+    ```
+
+    Add the provider configuration below, replacing `YOUR_I14_API_KEY` with the key you created:
+
+    ```json
+    {
+      "providers": {
+        "i14": {
+          "baseUrl": "https://api-dev.i14.ai/v1",
+          "api": "openai-completions",
+          "apiKey": "YOUR_I14_API_KEY",
+          "models": [
+            { "id": "sugar-glider-120b" },
+            { "id": "sugar-coder-27b" }
+          ]
+        }
+      }
+    }
+    ```
+
+    <Note>
+      If `models.json` already contains other providers, add the `i14` entry inside the existing `providers` object rather than replacing the entire file.
+    </Note>
+  </Step>
+
+  <Step title="Start Pi">
+    Launch Pi from Terminal:
+
+    ```bash
+    pi
+    ```
+
+    Select the i14 provider and the model you configured. If Pi was already running while you edited `models.json`, type `/reload` or restart Pi to pick up the changes.
+  </Step>
+
+</Steps>
+
+## Troubleshooting
+
+<Warning>
+  The i14 development inference service must be online and your API key must have access to the model you configured. If Pi cannot connect, confirm that the service is available with your team, then try again. For further configuration options, see the [Pi configuration docs](https://pi.dev/docs/latest/configuration).
+</Warning>

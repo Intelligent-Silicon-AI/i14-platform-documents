@@ -1,0 +1,68 @@
+---
+title: "Sugar Glider 120B: i14's Flagship Language Model"
+sidebarTitle: "Sugar Glider 120B"
+description: "Sugar Glider 120B is i14's proprietary 120-billion parameter model for general language tasks, reasoning, and instruction following."
+---
+
+Sugar Glider 120B is i14's own flagship language model, built on a proprietary architecture and trained with 120 billion parameters. It's designed for the full range of general language tasks — from multi-turn chat and complex reasoning to long-form content generation and precise instruction following.
+
+## Model Details
+
+| Field | Value |
+|---|---|
+| Model ID | `sugar-glider-120b` |
+| Parameters | 120B |
+| Architecture | i14 proprietary |
+| Best For | General chat, reasoning, summarization, instruction following, long-form generation |
+
+## Use via the API
+
+Send a request to the shared i14 endpoint and set `model` to `sugar-glider-120b`.
+
+```bash
+curl https://api-dev.i14.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $I14_API_KEY" \
+  -d '{
+    "model": "sugar-glider-120b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Explain the difference between supervised and unsupervised learning."
+      }
+    ]
+  }'
+```
+
+## Use via OpenAI SDK
+
+Sugar Glider 120B is fully OpenAI API-compatible. Point the SDK's `base_url` at the i14 endpoint and pass your i14 API key.
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key="your-i14-api-key",
+)
+
+response = client.chat.completions.create(
+    model="sugar-glider-120b",
+    messages=[
+        {
+            "role": "user",
+            "content": "Explain the difference between supervised and unsupervised learning.",
+        }
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+## Use Locally
+
+You can download Sugar Glider 120B weights directly from Hugging Face and run the model on your own infrastructure. See the [Hugging Face setup guide](/local/hugging-face) for download instructions and a quickstart.
+
+<Warning>
+  Sugar Glider 120B is a very large model. Running it locally requires substantial VRAM — review the [hardware requirements](/local/hardware-requirements) page before you start to make sure your setup is supported.
+</Warning>

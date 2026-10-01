@@ -1,0 +1,86 @@
+{
+  "projectType": "api-service",
+  "projectName": "i14 API",
+  "projectDescription": "Developer API serving two foundation models — Sugar Glider 120B and i14 Sugar Coder 27B — on a single endpoint with Bearer key auth, OpenRouter compatibility, and local Hugging Face weight downloads.",
+  "theme": "luma",
+  "primaryColor": "#ef7025",
+  "lightColor": "#eec9bc",
+  "darkColor": "#4fa1ab",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Models",
+            "pages": [
+              "models/overview",
+              "models/sugar-glider-120b",
+              "models/sugar-coder-27b"
+            ]
+          },
+          {
+            "group": "API Usage",
+            "pages": [
+              "api-usage/making-requests",
+              "api-usage/openrouter",
+              "api-usage/streaming"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/pi",
+              "integrations/openai-sdk"
+            ]
+          },
+          {
+            "group": "Local Deployment",
+            "pages": [
+              "local/hugging-face",
+              "local/hardware-requirements"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/chat-completions",
+              "api-reference/models"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Two models (Sugar Glider 120B and Sugar Coder 27B) on a single API endpoint — only the model ID changes",
+    "Sugar Coder 27B has embedded tool-use that runs inside the forward pass",
+    "No-card self-serve signup via Google, GitHub, or email",
+    "Compatible with the OpenAI client SDK and any OpenAI-compatible tooling",
+    "Accessible via OpenRouter with an existing OpenRouter API key",
+    "Hugging Face weight downloads for local self-hosted inference",
+    "Bearer token authentication"
+  ],
+  "publicApiSurface": [
+    "POST /v1/chat/completions",
+    "GET /v1/models",
+    "Model ID: sugar-glider-120b",
+    "Model ID: sugar-coder-27b",
+    "Bearer Authorization header",
+    "OpenRouter endpoint compatibility",
+    "Hugging Face model weights (Sugar Glider 120B, Sugar Coder 27B)"
+  ]
+}

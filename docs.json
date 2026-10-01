@@ -1,38 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "theme": "luma",
+  "name": "i14 API",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#ef7025",
+    "light": "#eec9bc",
+    "dark": "#4fa1ab"
   },
   "favicon": "/favicon.svg",
-  "navigation": {
-    "pages": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
@@ -40,33 +15,76 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:support@mintlify.com"
+        "label": "Sign Up",
+        "href": "https://platform-dev.i14.ai/"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Get API Key",
+      "href": "https://platform-dev.i14.ai/"
     }
   },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Models",
+            "pages": [
+              "models/overview",
+              "models/sugar-glider-120b",
+              "models/sugar-coder-27b"
+            ]
+          },
+          {
+            "group": "API Usage",
+            "pages": [
+              "api-usage/making-requests",
+              "api-usage/openrouter",
+              "api-usage/streaming"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/pi",
+              "integrations/openai-sdk"
+            ]
+          },
+          {
+            "group": "Local Deployment",
+            "pages": [
+              "local/hugging-face",
+              "local/hardware-requirements"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/chat-completions",
+              "api-reference/models"
+            ]
+          }
+        ]
+      }
     ]
   },
   "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    "socials": {}
   }
 }

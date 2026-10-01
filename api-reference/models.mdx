@@ -1,0 +1,114 @@
+---
+title: "GET /v1/models — List Available i14 Models"
+sidebarTitle: "Models"
+description: "Retrieve the list of model IDs available on your i14 API key. Returns model metadata including id, created timestamp, and owned_by."
+---
+
+The `/v1/models` endpoint returns the models your API key can access. Use it to programmatically verify which model IDs are available before making chat completion requests. This is useful for dynamic integrations where you want to discover supported models at runtime rather than hardcoding them.
+
+## Endpoint
+
+```
+GET https://api-dev.i14.ai/v1/models
+```
+
+## Request Headers
+
+| Header          | Required | Value                 |
+| --------------- | -------- | --------------------- |
+| `Authorization` | Yes      | `Bearer YOUR_API_KEY` |
+
+## Example Request
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url https://api-dev.i14.ai/v1/models \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_API_KEY",
+    base_url="https://api-dev.i14.ai/v1",
+)
+
+models = client.models.list()
+
+for model in models.data:
+    print(model.id)
+```
+
+```javascript Node.js
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "YOUR_API_KEY",
+  baseURL: "https://api-dev.i14.ai/v1",
+});
+
+const models = await client.models.list();
+
+for (const model of models.data) {
+  console.log(model.id);
+}
+```
+
+</CodeGroup>
+
+## Response Fields
+
+<ResponseField name="object" type="string">
+  The object type of the top-level response. Always `"list"`.
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  An array of model objects, one for each model your API key can access.
+
+  <Expandable title="Model object properties">
+    <ResponseField name="id" type="string">
+      The unique identifier for the model. Pass this value as the `model` parameter in your chat completion requests. Example: `"sugar-glider-120b"`.
+    </ResponseField>
+
+    <ResponseField name="object" type="string">
+      The object type of this item. Always `"model"`.
+    </ResponseField>
+
+    <ResponseField name="created" type="integer">
+      The Unix timestamp (in seconds) representing when the model was registered.
+    </ResponseField>
+
+    <ResponseField name="owned_by" type="string">
+      The organization that owns and maintains the model. For all i14 models, this value is `"i14"`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "sugar-glider-120b",
+      "object": "model",
+      "created": 1700000000,
+      "owned_by": "i14"
+    },
+    {
+      "id": "sugar-coder-27b",
+      "object": "model",
+      "created": 1700000000,
+      "owned_by": "i14"
+    }
+  ]
+}
+```
+
+<Note>
+  The models returned by this endpoint depend on which models your API key has been granted access to. If you expect to see a model that does not appear in the response, contact i14 support to verify your key's permissions.
+</Note>

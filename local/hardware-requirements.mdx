@@ -1,0 +1,102 @@
+---
+title: "Hardware Requirements for Running i14 Models Locally"
+sidebarTitle: "Hardware Requirements"
+description: "Minimum and recommended GPU hardware to run Sugar Glider 120B and Sugar Coder 27B locally, including quantized options to reduce VRAM usage."
+---
+
+Running i14 models locally requires substantial GPU memory. This page covers the minimum and recommended hardware for both models in full-precision and quantized configurations, so you can choose the right setup before downloading several hundred gigabytes of weights.
+
+## Sugar Coder 27B Hardware
+
+Sugar Coder 27B is based on Qwen Coder 27B and is designed to be accessible on a single high-end consumer GPU when run at 4-bit quantization. It's the recommended starting point if you're running on your own workstation.
+
+<CardGroup cols={2}>
+  <Card title="Full Precision (fp16)" icon="microchip">
+    **~54GB VRAM required**
+
+    - 2× RTX 4090 (24GB each)
+    - 1× A100 80GB
+    - 1× H100 80GB
+
+    Use this configuration for maximum output quality in a production or research setting.
+  </Card>
+  <Card title="4-bit Quantized" icon="gauge-high">
+    **~14GB VRAM required**
+
+    - 1× RTX 3090 (24GB)
+    - 1× RTX 4090 (24GB)
+
+    The easiest path to running Sugar Coder 27B locally. Quality degradation is minimal for most coding tasks.
+  </Card>
+</CardGroup>
+
+**Recommended for:** developers with one high-end consumer GPU who want fast local code generation without cloud API costs.
+
+## Sugar Glider 120B Hardware
+
+Sugar Glider 120B is i14's proprietary flagship model. Its size makes it impractical for consumer hardware even at 4-bit quantization, but it delivers the highest output quality of any i14 model.
+
+<CardGroup cols={2}>
+  <Card title="Full Precision (fp16)" icon="microchip">
+    **~240GB VRAM required**
+
+    - 4× A100 80GB (320GB total)
+    - 8× RTX 6000 Ada (48GB each, 384GB total)
+
+    Required for peak performance. Suitable for teams with datacenter-grade GPU clusters.
+  </Card>
+  <Card title="4-bit Quantized" icon="gauge-high">
+    **~60–80GB VRAM required**
+
+    - 2× A100 80GB (160GB total)
+    - 1× H100 80GB (tight; model parallelism recommended)
+
+    The most accessible path to running Sugar Glider 120B, but still requires professional-grade hardware.
+  </Card>
+</CardGroup>
+
+<Warning>
+  Sugar Glider 120B is **not practical for consumer GPUs** in any precision. Even at 4-bit quantization, the minimum VRAM requirement exceeds what any single consumer card provides. Plan for a multi-GPU or cloud-based setup.
+</Warning>
+
+**Recommended for:** teams with datacenter-class GPU clusters or access to cloud GPU instances with 80GB+ VRAM.
+
+## Quantization
+
+Quantization reduces the numerical precision of model weights — for example, from 16-bit floats (fp16) to 4-bit integers — which cuts VRAM usage by roughly 4× at a modest quality cost. For most tasks, especially code generation with Sugar Coder 27B, 4-bit quantized output is nearly indistinguishable from fp16.
+
+Two common quantization formats are supported:
+
+- **bitsandbytes (NF4)** — Load any Hugging Face model in 4-bit on the fly using the `BitsAndBytesConfig` API. No pre-quantized checkpoint required. See the [Hugging Face page](/local/hugging-face) for a code example.
+- **GGUF** — A portable format used by `llama.cpp` and `ollama`. Pre-quantized GGUF files are typically available in the model's Hugging Face repository alongside the full-precision weights.
+
+Choose bitsandbytes if you're working in Python with the `transformers` library. Choose GGUF if you want to use `ollama` or `llama.cpp` for a simpler, dependency-light setup.
+
+## Cloud GPU Options
+
+If your local hardware doesn't meet the requirements, you can rent suitable GPUs by the hour from cloud providers. This gives you access to A100 or H100 instances without a capital investment.
+
+<CardGroup cols={3}>
+  <Card title="RunPod" icon="cloud" href="https://www.runpod.io">
+    Wide selection of A100 and H100 instances. Supports persistent storage and custom Docker images.
+  </Card>
+  <Card title="Lambda Labs" icon="cloud" href="https://lambdalabs.com">
+    Competitive pricing on A100 clusters. Good option for multi-GPU Sugar Glider 120B deployments.
+  </Card>
+  <Card title="Vast.ai" icon="cloud" href="https://vast.ai">
+    Marketplace-style GPU rental. Often the lowest cost option for short-term or experimental workloads.
+  </Card>
+</CardGroup>
+
+## Summary
+
+| Model | Precision | Min VRAM | Example GPU(s) |
+|---|---|---|---|
+| Sugar Coder 27B | fp16 | 54 GB | 2× RTX 4090 |
+| Sugar Coder 27B | 4-bit | 14 GB | RTX 3090 / RTX 4090 |
+| Sugar Glider 120B | fp16 | 240 GB | 4× A100 80GB |
+| Sugar Glider 120B | 4-bit | 64 GB | 2× A100 80GB |
+
+<Note>
+  All VRAM figures are estimates. Actual usage varies with context length, batch size, and framework overhead. Leave at least 5–10% of VRAM headroom above these minimums to avoid out-of-memory errors during inference.
+</Note>

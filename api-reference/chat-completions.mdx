@@ -1,0 +1,228 @@
+---
+title: "POST /v1/chat/completions — i14 Chat API"
+sidebarTitle: "Chat Completions"
+description: "Create a chat completion with Sugar Glider 120B or Sugar Coder 27B. Accepts a messages array and model ID, returns generated text with usage stats."
+---
+
+The `/v1/chat/completions` endpoint is the primary way to generate text with i14 models. Send a conversation as a messages array and receive the model's response. The endpoint is fully OpenAI-compatible, so any client library that targets the OpenAI Chat API works with i14 by updating the base URL and API key.
+
+## Endpoint
+
+```
+POST https://api-dev.i14.ai/v1/chat/completions
+```
+
+## Request Headers
+
+| Header          | Required | Value                    |
+| --------------- | -------- | ------------------------ |
+| `Authorization` | Yes      | `Bearer YOUR_API_KEY`    |
+| `Content-Type`  | Yes      | `application/json`       |
+
+## Request Body Parameters
+
+<ParamField body="model" type="string" required>
+  The ID of the model to use for this completion. Must be one of:
+  - `sugar-glider-120b` — general-purpose 120B parameter model
+  - `sugar-coder-27b` — code-optimized 27B parameter model
+</ParamField>
+
+<ParamField body="messages" type="array" required>
+  An array of message objects representing the conversation history. Each object must contain a `role` and `content` field.
+
+  - `role` (string): The author of the message. One of `"system"`, `"user"`, or `"assistant"`.
+  - `content` (string): The text content of the message.
+</ParamField>
+
+<ParamField body="temperature" type="number">
+  Sampling temperature between `0.0` and `2.0`. Higher values produce more random output; lower values make responses more focused and deterministic. **Default:** `1.0`
+</ParamField>
+
+<ParamField body="max_tokens" type="integer">
+  The maximum number of tokens to generate in the completion. The request will be cut off once this limit is reached. If omitted, the model generates tokens up to its context limit.
+</ParamField>
+
+<ParamField body="stream" type="boolean">
+  When `true`, the response is delivered as a stream of [Server-Sent Events (SSE)](/api-usage/streaming) rather than a single JSON object. Each event contains a partial completion delta. **Default:** `false`
+</ParamField>
+
+<ParamField body="top_p" type="number">
+  Nucleus sampling probability mass. The model considers only the tokens comprising the top `top_p` probability mass at each step. Use this **or** `temperature`, not both. **Default:** `1.0`
+</ParamField>
+
+<ParamField body="n" type="integer">
+  How many independent completion choices to generate for each request. Each choice is billed separately against your token quota. **Default:** `1`
+</ParamField>
+
+<ParamField body="stop" type="string | array">
+  Up to four sequences where the model will stop generating further tokens. The returned text will not include the stop sequence itself. Pass a single string or an array of strings.
+</ParamField>
+
+<ParamField body="presence_penalty" type="number">
+  A value between `-2.0` and `2.0`. Positive values penalize tokens that have already appeared in the text, increasing the model's likelihood to introduce new topics. **Default:** `0`
+</ParamField>
+
+<ParamField body="frequency_penalty" type="number">
+  A value between `-2.0` and `2.0`. Positive values penalize tokens based on how frequently they have appeared so far, reducing repetitive phrasing. **Default:** `0`
+</ParamField>
+
+## Example Request
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url https://api-dev.i14.ai/v1/chat/completions \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "model": "sugar-glider-120b",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user",
+        "content": "Explain what a transformer model is in one sentence."
+      }
+    ],
+    "temperature": 0.7,
+    "max_tokens": 128
+  }'
+```
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_API_KEY",
+    base_url="https://api-dev.i14.ai/v1",
+)
+
+response = client.chat.completions.create(
+    model="sugar-glider-120b",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain what a transformer model is in one sentence."},
+    ],
+    temperature=0.7,
+    max_tokens=128,
+)
+
+print(response.choices[0].message.content)
+```
+
+```javascript Node.js
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "YOUR_API_KEY",
+  baseURL: "https://api-dev.i14.ai/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "sugar-glider-120b",
+  messages: [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: "Explain what a transformer model is in one sentence." },
+  ],
+  temperature: 0.7,
+  max_tokens: 128,
+});
+
+console.log(response.choices[0].message.content);
+```
+
+</CodeGroup>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+  A unique identifier for this completion, prefixed with `chatcmpl-`.
+</ResponseField>
+
+<ResponseField name="object" type="string">
+  The object type. Always `"chat.completion"`.
+</ResponseField>
+
+<ResponseField name="created" type="integer">
+  The Unix timestamp (in seconds) of when the completion was created.
+</ResponseField>
+
+<ResponseField name="model" type="string">
+  The model ID that was used to generate this completion.
+</ResponseField>
+
+<ResponseField name="choices" type="array">
+  An array of completion choice objects. The array contains `n` items, where `n` is the value you passed in the request (default `1`).
+
+  <Expandable title="Choice object properties">
+    <ResponseField name="index" type="integer">
+      The zero-based index of this choice within the `choices` array.
+    </ResponseField>
+
+    <ResponseField name="message.role" type="string">
+      The role of the author of this message. Always `"assistant"` for generated completions.
+    </ResponseField>
+
+    <ResponseField name="message.content" type="string">
+      The generated text content of the assistant's reply.
+    </ResponseField>
+
+    <ResponseField name="finish_reason" type="string">
+      The reason generation stopped. Possible values:
+      - `"stop"` — the model hit a natural stopping point or a stop sequence
+      - `"length"` — the `max_tokens` limit was reached
+      - `"content_filter"` — content was flagged by the safety system
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="usage" type="object">
+  Token consumption statistics for this request.
+
+  <Expandable title="Usage object properties">
+    <ResponseField name="prompt_tokens" type="integer">
+      The number of tokens in the input messages.
+    </ResponseField>
+
+    <ResponseField name="completion_tokens" type="integer">
+      The number of tokens in the generated completion.
+    </ResponseField>
+
+    <ResponseField name="total_tokens" type="integer">
+      The sum of `prompt_tokens` and `completion_tokens`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "id": "chatcmpl-a3f9b2c1d4e5f678901234ab",
+  "object": "chat.completion",
+  "created": 1700000000,
+  "model": "sugar-glider-120b",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "A transformer model is a deep learning architecture that uses self-attention mechanisms to process sequential data in parallel, enabling it to capture long-range dependencies efficiently."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 32,
+    "completion_tokens": 34,
+    "total_tokens": 66
+  }
+}
+```
+
+## Streaming
+
+Setting `"stream": true` in your request body switches the response from a single JSON object to a stream of [Server-Sent Events (SSE)](/api-usage/streaming). Each event delivers a partial token delta as it is generated, letting you display results to users progressively without waiting for the full completion to finish. See the [Streaming guide](/api-usage/streaming) for a complete walkthrough and code examples.

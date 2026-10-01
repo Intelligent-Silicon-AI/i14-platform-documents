@@ -1,47 +1,110 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Quickstart: Make Your First i14 API Call"
+sidebarTitle: "Quickstart"
+description: "Get your i14 API key and make your first chat completion request to Sugar Glider 120B or Sugar Coder 27B in under five minutes."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+The i14 API is OpenAI-compatible, so if you have ever called `/v1/chat/completions` before, everything here will feel familiar. This guide walks you from zero to your first successful response in under five minutes—no credit card needed.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+<Tip>
+  The i14 API follows the OpenAI request and response schema exactly. Any SDK or tool that already targets the OpenAI API works with i14—just point `base_url` at `https://api-dev.i14.ai/v1` and swap in your i14 key.
+</Tip>
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
+  <Step title="Create your free account">
+    Go to [platform-dev.i14.ai](https://platform-dev.i14.ai/) and sign up with Google, GitHub, or an email address. No credit card is required and your account is active immediately.
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
-    ```
+  <Step title="Copy your API key">
+    After signing in, open the **API Keys** section of the dashboard and create a new key. Copy it somewhere safe—the dashboard will not show the full key again after you leave the page.
+
+    <Warning>
+      Treat your API key like a password. Never paste it into source code or commit it to a repository. Store it in an environment variable or a secrets manager instead.
+    </Warning>
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+
+  <Step title="Make a test request with Sugar Glider 120B">
+    Export your key as an environment variable, then send a `POST` request to `/v1/chat/completions`:
 
     ```bash
-    your-cli start
+    export I14_API_KEY="your_api_key_here"
+
+    curl https://api-dev.i14.ai/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $I14_API_KEY" \
+      -d '{
+        "model": "sugar-glider-120b",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain the difference between a process and a thread in one paragraph."
+          }
+        ]
+      }'
+    ```
+
+    You should receive a JSON response with a `choices` array containing the model's reply.
+  </Step>
+
+  <Step title="Try Sugar Coder 27B">
+    Swap the `model` field to `sugar-coder-27b` to route the same request to the coding agent. Sugar Coder 27B executes embedded tools during its forward pass, making it especially effective for code generation, debugging, and multi-step software tasks.
+
+    ```bash
+    curl https://api-dev.i14.ai/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $I14_API_KEY" \
+      -d '{
+        "model": "sugar-coder-27b",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that checks whether a string is a valid IPv4 address."
+          }
+        ]
+      }'
     ```
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Python Example
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+The `openai` Python SDK works with i14 out of the box. Install it with `pip install openai` if you have not already, then run:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key="your_api_key_here",  # or read from os.environ["I14_API_KEY"]
+)
+
+# Call Sugar Glider 120B
+response = client.chat.completions.create(
+    model="sugar-glider-120b",
+    messages=[
+        {
+            "role": "user",
+            "content": "Explain the difference between a process and a thread in one paragraph.",
+        }
+    ],
+)
+
+print(response.choices[0].message.content)
+
+# Switch to Sugar Coder 27B — only the model ID changes
+coding_response = client.chat.completions.create(
+    model="sugar-coder-27b",
+    messages=[
+        {
+            "role": "user",
+            "content": "Write a Python function that checks whether a string is a valid IPv4 address.",
+        }
+    ],
+)
+
+print(coding_response.choices[0].message.content)
+```
+
+<Note>
+  You can also access both models through **OpenRouter** without creating an i14 account. Point your SDK at `https://openrouter.ai/api/v1`, pass your OpenRouter API key, and use the same model IDs (`sugar-glider-120b` and `sugar-coder-27b`). See the [OpenRouter guide](/api-usage/openrouter) for details.
+</Note>

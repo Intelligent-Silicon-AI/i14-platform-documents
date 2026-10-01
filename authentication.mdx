@@ -1,0 +1,91 @@
+---
+title: "Authenticate with the i14 API Using Bearer Keys"
+sidebarTitle: "Authentication"
+description: "i14 API uses Bearer token authentication. Learn how to create your API key, pass it in requests, and handle auth errors."
+---
+
+Every request you send to the i14 API must include a Bearer token in the `Authorization` header. The token is an API key that you generate from the i14 developer platform. Without a valid key the API returns a `401` error and discards the request—no partial processing occurs. This page shows you how to get a key, attach it to requests, keep it secure, and interpret authentication errors when they arise.
+
+## Get Your API Key
+
+Sign in to [platform-dev.i14.ai](https://platform-dev.i14.ai/) using Google, GitHub, or email. No credit card is required. Once you are in the dashboard:
+
+1. Navigate to the **API Keys** section.
+2. Click **Create new key** and give it a descriptive name (for example, `dev-laptop` or `prod-service`).
+3. Copy the key immediately—the dashboard shows the full value only once.
+
+Keys are scoped to the models your account has access to. If your key does not have access to a specific model, the API returns a `403` error for that model even if the key is otherwise valid.
+
+## Pass Your Key in Requests
+
+Include your key as a Bearer token in the `Authorization` HTTP header on every request.
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+<CodeGroup>
+
+```bash cURL
+curl https://api-dev.i14.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $I14_API_KEY" \
+  -d '{
+    "model": "sugar-glider-120b",
+    "messages": [
+      { "role": "user", "content": "Hello!" }
+    ]
+  }'
+```
+
+```python Python (openai SDK)
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api-dev.i14.ai/v1",
+    api_key=os.environ["I14_API_KEY"],
+)
+
+response = client.chat.completions.create(
+    model="sugar-glider-120b",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+
+print(response.choices[0].message.content)
+```
+
+</CodeGroup>
+
+## Keep Your Key Safe
+
+Your API key grants full access to your i14 account. Follow these practices to protect it:
+
+- **Use environment variables.** Store the key in `I14_API_KEY` (or any name you choose) and read it at runtime. Never hard-code it in source files.
+- **Keep it out of version control.** Add `.env` files and any file containing secrets to your `.gitignore`. If you use a secrets scanner such as `git-secrets` or GitHub secret scanning, enable it on every repository that touches the key.
+- **Rotate immediately if exposed.** If you suspect your key has been leaked—for example, committed to a public repo—go to the dashboard, revoke the key, and create a new one. Old keys stop working as soon as you revoke them.
+- **Create per-environment keys.** Use separate keys for development, staging, and production so you can revoke one without affecting the others.
+
+<Warning>
+  If you accidentally push an API key to a public repository, revoke it from the dashboard right away. Treat any exposed key as compromised even if you delete the commit, because git history can be cached by third-party indexers.
+</Warning>
+
+## Authentication Errors
+
+The i14 API returns standard HTTP status codes for authentication and authorization failures.
+
+| Status | Meaning | Common Cause |
+|--------|---------|--------------|
+| `401 Unauthorized` | The request could not be authenticated. | The `Authorization` header is missing, malformed (`Bearer` prefix omitted), or the key has been revoked. |
+| `403 Forbidden` | The request was authenticated but not authorized. | Your key does not have access to the requested model. Check your account's model permissions in the dashboard. |
+| `429 Too Many Requests` | The request was rejected due to rate limiting. | You have exceeded the request rate or token quota for your plan. Back off and retry after the interval indicated in the `Retry-After` response header. |
+
+When you receive a `401`, check that:
+
+1. The `Authorization` header is present and formatted as `Bearer YOUR_API_KEY` (note the space after `Bearer`).
+2. You are using a key from [platform-dev.i14.ai](https://platform-dev.i14.ai/) and not a key from another provider.
+3. The key has not been revoked in the dashboard.
+
+<Note>
+  If you access i14 models through **OpenRouter**, pass your OpenRouter API key—not your i14 key—in the `Authorization` header, and point your requests at `https://openrouter.ai/api/v1`. OpenRouter handles authentication with i14 on your behalf. See the [OpenRouter guide](/api-usage/openrouter) for setup instructions.
+</Note>

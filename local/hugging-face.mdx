@@ -1,0 +1,168 @@
+---
+title: "Download i14 Models from Hugging Face"
+sidebarTitle: "Hugging Face"
+description: "Download Sugar Glider 120B or Sugar Coder 27B weights from Hugging Face and run them locally on your own hardware."
+---
+
+Both i14 models are available as open weights on Hugging Face. You can download and run them locally for full control over inference, privacy, and cost — no API key required. Whether you're running a single high-end consumer GPU or a multi-GPU datacenter cluster, this page walks you through getting started.
+
+## Available Models
+
+| Model | HF Repo | Parameters | Quantization Support |
+|---|---|---|---|
+| Sugar Coder 27B | `i14-ai/sugar-coder-27b` | 27B | fp16, 4-bit (bitsandbytes, GGUF) |
+| Sugar Glider 120B | `i14-ai/sugar-glider-120b` | 120B | fp16, 4-bit (bitsandbytes, GGUF) |
+
+## Install Dependencies
+
+Install the required Python packages before downloading any model weights.
+
+<Steps>
+  <Step title="Install core packages">
+    ```bash
+    pip install transformers torch accelerate huggingface_hub
+    ```
+  </Step>
+  <Step title="Log in to Hugging Face (optional)">
+    If you need to access gated repositories, authenticate with your Hugging Face token.
+    ```bash
+    huggingface-cli login
+    ```
+  </Step>
+</Steps>
+
+## Download Sugar Coder 27B
+
+Sugar Coder 27B is the more accessible of the two models. At 4-bit quantization it fits on a single RTX 3090 or RTX 4090, making it practical for individual developers on consumer hardware.
+
+<Steps>
+  <Step title="Download the weights">
+    Use the Hugging Face CLI to download the model to your local cache.
+    ```bash
+    huggingface-cli download i14-ai/sugar-coder-27b
+    ```
+  </Step>
+  <Step title="Run inference with Transformers">
+    Load the model with the `transformers` pipeline and run your first inference.
+    ```python
+    from transformers import pipeline
+
+    pipe = pipeline(
+        "text-generation",
+        model="i14-ai/sugar-coder-27b",
+        device_map="auto",
+        torch_dtype="auto",
+    )
+
+    result = pipe(
+        "Write a Python function that sorts a list of dictionaries by a given key.",
+        max_new_tokens=512,
+        do_sample=False,
+    )
+
+    print(result[0]["generated_text"])
+    ```
+  </Step>
+</Steps>
+
+## Download Sugar Glider 120B
+
+Sugar Glider 120B is i14's flagship 120B parameter model. The download is significantly larger (~240GB for fp16 weights) and requires a multi-GPU setup or a high-end single GPU to run. Make sure you have sufficient disk space and the appropriate hardware before proceeding.
+
+<Warning>
+  Sugar Glider 120B requires approximately 240GB of VRAM in fp16 or ~60–80GB at 4-bit quantization. This is not practical for consumer GPUs. See the [hardware requirements](/local/hardware-requirements) page for full specs.
+</Warning>
+
+<Steps>
+  <Step title="Download the weights">
+    ```bash
+    huggingface-cli download i14-ai/sugar-glider-120b
+    ```
+  </Step>
+  <Step title="Run inference with Transformers">
+    ```python
+    from transformers import pipeline
+
+    pipe = pipeline(
+        "text-generation",
+        model="i14-ai/sugar-glider-120b",
+        device_map="auto",
+        torch_dtype="auto",
+    )
+
+    result = pipe(
+        "Explain the tradeoffs between transformer and state-space models.",
+        max_new_tokens=1024,
+        do_sample=False,
+    )
+
+    print(result[0]["generated_text"])
+    ```
+  </Step>
+</Steps>
+
+## Quantized Models
+
+If you don't have enough VRAM for the full fp16 weights, 4-bit quantization dramatically reduces memory requirements at a small quality cost. Use the `bitsandbytes` library to load either model in 4-bit precision on the fly.
+
+<Steps>
+  <Step title="Install bitsandbytes">
+    ```bash
+    pip install bitsandbytes
+    ```
+  </Step>
+  <Step title="Load a model in 4-bit">
+    Pass `load_in_4bit=True` to the quantization config when loading your model.
+
+    <CodeGroup>
+      ```python Sugar Coder 27B (4-bit)
+      from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+      quant_config = BitsAndBytesConfig(load_in_4bit=True)
+
+      tokenizer = AutoTokenizer.from_pretrained("i14-ai/sugar-coder-27b")
+      model = AutoModelForCausalLM.from_pretrained(
+          "i14-ai/sugar-coder-27b",
+          quantization_config=quant_config,
+          device_map="auto",
+      )
+
+      inputs = tokenizer("def fibonacci(n):", return_tensors="pt").to(model.device)
+      outputs = model.generate(**inputs, max_new_tokens=256)
+      print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+      ```
+
+      ```python Sugar Glider 120B (4-bit)
+      from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+      quant_config = BitsAndBytesConfig(load_in_4bit=True)
+
+      tokenizer = AutoTokenizer.from_pretrained("i14-ai/sugar-glider-120b")
+      model = AutoModelForCausalLM.from_pretrained(
+          "i14-ai/sugar-glider-120b",
+          quantization_config=quant_config,
+          device_map="auto",
+      )
+
+      inputs = tokenizer("Summarize the history of neural networks:", return_tensors="pt").to(model.device)
+      outputs = model.generate(**inputs, max_new_tokens=512)
+      print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+      ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+<Note>
+  For detailed VRAM requirements, minimum GPU specs, and recommended hardware configurations for both models, see the [Hardware Requirements](/local/hardware-requirements) page.
+</Note>
+
+<Tip>
+  For high-throughput local serving (e.g. running i14 models as a local API endpoint), use vLLM instead of the Transformers pipeline. It delivers significantly better token throughput for concurrent requests.
+
+  ```bash
+  pip install vllm
+  vllm serve i14-ai/sugar-coder-27b
+  ```
+
+  vLLM exposes an OpenAI-compatible API at `http://localhost:8000` by default.
+</Tip>

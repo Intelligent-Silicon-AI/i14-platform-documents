@@ -1,0 +1,43 @@
+---
+title: "i14 API: Two Frontier Models on One Endpoint"
+sidebarTitle: "Introduction"
+description: "i14 API gives developers access to Sugar Glider 120B and Sugar Coder 27B through a single OpenAI-compatible endpoint with no credit card required."
+---
+
+The i14 API puts two frontier models behind a single OpenAI-compatible endpoint so you can switch between a large general-purpose language model and a tool-augmented coding agent by changing one parameter. **Sugar Glider 120B** is i14's own 120-billion-parameter architecture built for broad reasoning and generation tasks. **Sugar Coder 27B** is a coding agent—converted from a Qwen Coder 27B base—whose tools execute inside the forward pass, giving it the ability to write, run, and debug code without extra orchestration on your side. Both models are available at `https://api-dev.i14.ai/v1` the moment you create a free account.
+
+## Get Started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Make your first API call in under five minutes—no credit card required.
+  </Card>
+  <Card title="Models" icon="microchip" href="/models/overview">
+    Compare Sugar Glider 120B and Sugar Coder 27B side by side.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/chat-completions">
+    Full reference for the `/v1/chat/completions` endpoint and every parameter.
+  </Card>
+  <Card title="OpenRouter" icon="network-wired" href="/api-usage/openrouter">
+    Access both models through OpenRouter with your existing key.
+  </Card>
+</CardGroup>
+
+## The Models
+
+<CardGroup cols={2}>
+  <Card title="Sugar Glider 120B" icon="star" href="/models/sugar-glider-120b">
+    i14's flagship general-purpose model. Use it for reasoning, summarization, instruction-following, and long-context tasks.
+  </Card>
+  <Card title="i14 Sugar Coder 27B" icon="terminal" href="/models/sugar-coder-27b">
+    A coding agent with embedded tools that fire during the forward pass. Built for code generation, debugging, and multi-step software tasks.
+  </Card>
+</CardGroup>
+
+## Access Options
+
+You can start calling the i14 API in three ways:
+
+- **Self-serve signup** — Create a free account at [platform-dev.i14.ai](https://platform-dev.i14.ai/) using Google, GitHub, or email. No credit card is required. Your API key is available immediately after sign-up.
+- **OpenRouter** — If you already have an OpenRouter account, both models appear in the OpenRouter model catalog. Pass your OpenRouter key to `https://openrouter.ai/api/v1` and use the same model IDs.
+- **Local weights** — Model weights for both Sugar Glider 120B and Sugar Coder 27B are published on Hugging Face, so you can run either model on your own infrastructure with standard tools like `transformers` or `vllm`.

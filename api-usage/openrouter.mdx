@@ -1,0 +1,73 @@
+---
+title: "Access i14 Models via OpenRouter"
+sidebarTitle: "OpenRouter"
+description: "Use your existing OpenRouter API key to access i14's Sugar Glider 120B and Sugar Coder 27B without creating a separate i14 account."
+---
+
+If you already have an OpenRouter account, you can access i14 models immediately using your existing OpenRouter API key — no separate i14 account needed. OpenRouter acts as a unified gateway, so you can call i14 models the same way you call any other provider on the platform.
+
+## OpenRouter vs Direct API
+
+Both access paths support the same OpenAI-compatible request format. Choose the one that fits your setup:
+
+| | OpenRouter | Direct i14 API |
+|---|---|---|
+| **API key** | Your existing OpenRouter key | i14 API key from [platform-dev.i14.ai](https://platform-dev.i14.ai/) |
+| **Access model** | Access multiple providers in one place | Direct access, no third-party |
+| **Model IDs** | Prefixed with `i14/` (e.g. `i14/sugar-glider-120b`) | Short IDs (e.g. `sugar-glider-120b`) |
+| **Base URL** | `https://openrouter.ai/api/v1` | `https://api-dev.i14.ai/v1` |
+
+## Model IDs on OpenRouter
+
+When making requests through OpenRouter, use the following model IDs:
+
+- `i14/sugar-glider-120b` — General-purpose large language model
+- `i14/sugar-coder-27b` — Code-focused model with embedded tools
+
+## Making Requests
+
+Use `https://openrouter.ai/api/v1` as the base URL and your OpenRouter API key as the bearer token. The rest of the request body is identical to a direct i14 API call.
+
+```bash
+curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "i14/sugar-glider-120b",
+    "messages": [
+      { "role": "system", "content": "You are a helpful assistant." },
+      { "role": "user", "content": "Explain transformer attention in one paragraph." }
+    ],
+    "temperature": 0.7,
+    "max_tokens": 512
+  }'
+```
+
+## Using the OpenAI SDK with OpenRouter
+
+You can use the OpenAI SDK by setting `base_url` to the OpenRouter endpoint and passing your OpenRouter key as the `api_key`. Swap the model ID to the `i14/` prefixed version and everything else stays the same.
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_OPENROUTER_API_KEY",
+    base_url="https://openrouter.ai/api/v1",
+)
+
+response = client.chat.completions.create(
+    model="i14/sugar-glider-120b",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain transformer attention in one paragraph."},
+    ],
+    temperature=0.7,
+    max_tokens=512,
+)
+
+print(response.choices[0].message.content)
+```
+
+<Note>
+  Visit [https://openrouter.ai](https://openrouter.ai) to create an OpenRouter account, view per-token pricing for i14 models, and explore the other providers available through the platform.
+</Note>

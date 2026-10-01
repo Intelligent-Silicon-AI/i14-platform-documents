@@ -1,0 +1,141 @@
+---
+title: "Making Requests to the i14 API"
+sidebarTitle: "Making Requests"
+description: "Learn how to structure requests to the i14 API, pass parameters, and handle responses for chat completions with either model."
+---
+
+The i14 API is OpenAI-compatible. If you've used the OpenAI API, the request format will feel familiar — only the base URL and model IDs are different. You can migrate existing OpenAI integrations by swapping two values and be up and running immediately.
+
+## Base URL
+
+All requests are made to the following base URL:
+
+```
+https://api-dev.i14.ai/v1
+```
+
+To get your API key, visit [https://platform-dev.i14.ai/](https://platform-dev.i14.ai/) and create an account.
+
+## Request Format
+
+Send a `POST` request to `/v1/chat/completions` with your API key in the `Authorization` header and a JSON body containing the model, messages, and any optional parameters.
+
+```bash
+curl https://api-dev.i14.ai/v1/chat/completions \
+  -H "Authorization: Bearer $I14_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "sugar-glider-120b",
+    "messages": [
+      { "role": "system", "content": "You are a helpful assistant." },
+      { "role": "user", "content": "What is the capital of France?" }
+    ],
+    "temperature": 0.7,
+    "max_tokens": 256
+  }'
+```
+
+## Key Parameters
+
+<ParamField body="model" type="string" required>
+  The model ID to use for the completion. Must be either `sugar-glider-120b` (general-purpose) or `sugar-coder-27b` (coding tasks with embedded tools).
+</ParamField>
+
+<ParamField body="messages" type="array" required>
+  An array of message objects that form the conversation history. Each object must include a `role` (`system`, `user`, or `assistant`) and a `content` string.
+</ParamField>
+
+<ParamField body="temperature" type="number">
+  Sampling temperature between `0` and `2`. Higher values produce more creative output; lower values produce more deterministic output. Defaults to `1`.
+</ParamField>
+
+<ParamField body="max_tokens" type="integer">
+  The maximum number of tokens to generate in the response. If omitted, the model will generate tokens up to its context limit.
+</ParamField>
+
+<ParamField body="stream" type="boolean">
+  Set to `true` to receive the response as a stream of Server-Sent Events (SSE). See the [Streaming](/api-usage/streaming) page for details.
+</ParamField>
+
+<ParamField body="top_p" type="number">
+  Nucleus sampling threshold. The model considers only the tokens comprising the top `top_p` probability mass. Defaults to `1`.
+</ParamField>
+
+## Response
+
+A successful non-streaming request returns a JSON object like the following:
+
+```json
+{
+  "id": "chatcmpl-a1b2c3d4e5f6",
+  "object": "chat.completion",
+  "model": "sugar-glider-120b",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The capital of France is Paris."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 24,
+    "completion_tokens": 9,
+    "total_tokens": 33
+  }
+}
+```
+
+The `choices[0].message.content` field contains the model's reply. The `usage` object reports token counts for the request, which you can use for cost tracking.
+
+## Using the OpenAI SDK
+
+Because the i14 API is OpenAI-compatible, you can use the official OpenAI SDK in any language by pointing it at the i14 base URL. Pass your i14 API key as the `api_key` argument.
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_I14_API_KEY",
+    base_url="https://api-dev.i14.ai/v1",
+)
+
+response = client.chat.completions.create(
+    model="sugar-glider-120b",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What is the capital of France?"},
+    ],
+    temperature=0.7,
+    max_tokens=256,
+)
+
+print(response.choices[0].message.content)
+```
+
+```javascript Node.js
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "YOUR_I14_API_KEY",
+  baseURL: "https://api-dev.i14.ai/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "sugar-glider-120b",
+  messages: [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: "What is the capital of France?" },
+  ],
+  temperature: 0.7,
+  max_tokens: 256,
+});
+
+console.log(response.choices[0].message.content);
+```
+
+</CodeGroup>
